@@ -2,7 +2,7 @@
 
 import { ArrowDown } from '@geist-ui/icons';
 import { useState, useCallback, useEffect } from 'react';
-import { Player, GameStatus, Moves, ValidatorResult, GameScore, Lines } from '@/shared/types/index.types';
+import { Player, GameStatus, Moves, ValidatorResult, GameScore, Lines, ColumnX } from '@/shared/types/index.types';
 import { validator } from '@/shared/helpers/validator';
 import { saveGameState, loadGameState, saveScore, loadScore, clearGameState } from '@/shared/helpers/storage';
 
@@ -11,7 +11,7 @@ export default function ConnectFour() {
   const [currentPlayer, setCurrentPlayer] = useState<Player>(Player.First);
   const [gameResult, setGameResult] = useState<ValidatorResult>({});
   const [gameStatus, setGameStatus] = useState<GameStatus>(GameStatus.Waiting);
-  const [selectedColumn, setSelectedColumn] = useState<number>(0);
+  const [selectedColumn, setSelectedColumn] = useState<ColumnX>(0);
 
   // Состояния для отмены/возобновления ходов
   const [undoStack, setUndoStack] = useState<Moves[]>([]);
@@ -234,52 +234,52 @@ export default function ConnectFour() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-cover bg-center bg-fixed bg-[url('../../public/back-tochka.png')]">
-      <div className="h-[90vh] p-6 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl flex flex-col">
+    <div className="min-h-screen flex flex-col items-center justify-center p-2 bg-cover bg-center bg-fixed bg-[url('../../public/back-tochka.png')]">
+      <div className="w-full max-w-md p-4 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl flex flex-col">
         {/* Заголовок */}
         <div className="flex-shrink-0">
-          <h1 className="text-3xl font-bold text-center mb-4 text-white">
+          <h1 className="text-2xl md:text-3xl font-bold text-center mb-3 text-white">
             4 в ряд
           </h1>
         </div>
 
         {/* Статус игры */}
-        <div className="flex-shrink-0 text-center mb-4">
-          <p className="text-lg text-white font-semibold">
+        <div className="flex-shrink-0 text-center mb-3">
+          <p className="text-base md:text-lg text-white font-semibold leading-tight">
             {getStatusMessage()}
           </p>
-          <p className="text-sm text-white/70 mt-1">
-            Используйте ← → или курсор мыши для выбора колонки
-            <br/>
-            Enter или клик для размещения фишки
+          <p className="text-xs md:text-sm text-white/70 mt-1 leading-relaxed">
+            Используйте ← → или касание для выбора колонки
+            <br />
+            Enter или касание для размещения фишки
           </p>
         </div>
 
         {/* Счетчик очков */}
-        <div className="flex-shrink-0 flex justify-center gap-6 mb-3">
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 min-w-[100px]">
-            <div className="flex items-center justify-center gap-2 mb-1">
-              <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-              <span className="text-white font-semibold text-sm">Игрок 1</span>
+        <div className="flex-shrink-0 flex justify-center gap-3 md:gap-6 mb-3">
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 md:p-3 min-w-[80px] md:min-w-[100px]">
+            <div className="flex items-center justify-center gap-1 md:gap-2 mb-1">
+              <div className="w-2 h-2 md:w-3 md:h-3 bg-red-500 rounded-full"></div>
+              <span className="text-white font-semibold text-xs md:text-sm">Игрок 1</span>
             </div>
-            <div className="text-xl font-bold text-white text-center">
+            <div className="text-lg md:text-xl font-bold text-white text-center">
               {score.player1}
             </div>
           </div>
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 min-w-[100px]">
-            <div className="flex items-center justify-center gap-2 mb-1">
-              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-              <span className="text-white font-semibold text-sm">Игрок 2</span>
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 md:p-3 min-w-[80px] md:min-w-[100px]">
+            <div className="flex items-center justify-center gap-1 md:gap-2 mb-1">
+              <div className="w-2 h-2 md:w-3 md:h-3 bg-blue-500 rounded-full"></div>
+              <span className="text-white font-semibold text-xs md:text-sm">Игрок 2</span>
             </div>
-            <div className="text-xl font-bold text-white text-center">
+            <div className="text-lg md:text-xl font-bold text-white text-center">
               {score.player2}
             </div>
           </div>
         </div>
 
         {/* Игровое поле */}
-        <div className="flex-1 flex items-center justify-center mb-4">
-          <div className="flex gap-2 justify-center items-center ">
+        <div className="flex-1 flex items-center justify-center mb-3">
+          <div className="flex gap-1 md:gap-2 justify-center items-center scale-90 md:scale-100">
             {Array.from({ length: Lines.Columns }, (_, colIndex) => (
               <div
                 key={colIndex}
@@ -288,32 +288,32 @@ export default function ConnectFour() {
                   onMouseEnter: () => handleColumnHover(colIndex)
                 })}
                 className={`
-              cursor-pointer rounded-lg p-1 transition-all duration-200 ease-in-out
-              ${selectedColumn === colIndex
+                  cursor-pointer rounded-lg p-0.5 md:p-1 transition-all duration-200 ease-in-out
+                  ${selectedColumn === colIndex
                     ? 'bg-blue-400/10 scale-105'
                     : 'hover:bg-blue-400/10 hover:scale-102'
                   }
-              ${gameStatus === GameStatus.Win || gameStatus === GameStatus.Draw
+                  ${gameStatus === GameStatus.Win || gameStatus === GameStatus.Draw
                     ? 'cursor-not-allowed opacity-50'
                     : ''
                   }
-            `}
+                `}
               >
                 {/* Стрелка выбора колонки */}
                 <div className={`
-              w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm mb-2 mx-auto
-              ${selectedColumn === colIndex
+                  w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-white font-bold text-xs md:text-sm mb-1 md:mb-2 mx-auto
+                  ${selectedColumn === colIndex
                     ? 'bg-yellow-500 ring-2 ring-yellow-300'
                     : gameStatus === GameStatus.Win || gameStatus === GameStatus.Draw
                       ? 'bg-blue-600'
                       : 'bg-blue-600 hover:bg-blue-700 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200 ease-in-out'
                   }
-            `}>
-                  <ArrowDown className="w-4 h-4" />
+                `}>
+                  <ArrowDown className="w-3 h-3 md:w-4 md:h-4" />
                 </div>
 
                 {/* Ячейки колонки */}
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-col gap-0.5 md:gap-1">
                   {Array.from({ length: Lines.Rows }, (_, rowIndex) => {
                     const row = rowIndex;
                     const col = colIndex;
@@ -330,16 +330,16 @@ export default function ConnectFour() {
                       <div
                         key={`${col}-${row}`}
                         className={`
-                      w-10 h-10 rounded-full border border-white/30 flex items-center justify-center transition-all duration-300 ease-in-out
-                      ${player === Player.Empty
+                          w-8 h-8 md:w-10 md:h-10 rounded-full border border-white/30 flex items-center justify-center transition-all duration-300 ease-in-out
+                          ${player === Player.Empty
                             ? 'bg-gray-300/50'
                             : `${getPlayerColor(player)} ${isWinningCell ? 'animate-pulse ring-2 ring-yellow-400 ring-opacity-75' : ''}`
                           }
-                      ${gameStatus !== GameStatus.Win && gameStatus !== GameStatus.Draw ? 'hover:scale-105' : ''}
-                    `}
+                          ${gameStatus !== GameStatus.Win && gameStatus !== GameStatus.Draw ? 'hover:scale-105' : ''}
+                        `}
                       >
                         {player !== Player.Empty && (
-                          <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center">
+                          <div className="w-4 h-4 md:w-5 md:h-5 bg-white rounded-full flex items-center justify-center">
                             <span className="text-xs font-bold text-gray-800">
                               {player === Player.First ? '1' : '2'}
                             </span>
@@ -355,30 +355,30 @@ export default function ConnectFour() {
         </div>
 
         {/* Кнопки управления */}
-        <div className="flex-shrink-0 flex flex-wrap justify-center gap-3">
+        <div className="flex-shrink-0 flex flex-wrap justify-center gap-2 md:gap-3">
           <button
             onClick={undoMove}
             disabled={undoStack.length === 0}
-            className="cursor-pointer px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-500 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg text-sm"
+            className="cursor-pointer px-3 py-2 md:px-4 md:py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-500 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg text-xs md:text-sm flex-1 min-w-[120px]"
           >
             Отмена хода
           </button>
           <button
             onClick={redoMove}
             disabled={redoStack.length === 0}
-            className="cursor-pointer px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-500 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg text-sm"
+            className="cursor-pointer px-3 py-2 md:px-4 md:py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-500 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg text-xs md:text-sm flex-1 min-w-[120px]"
           >
-            Возобновление хода
+            Возобновление
           </button>
           <button
             onClick={resetGame}
-            className="cursor-pointer px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg text-sm"
+            className="cursor-pointer px-3 py-2 md:px-4 md:py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg text-xs md:text-sm flex-1 min-w-[120px]"
           >
             Новая игра
           </button>
           <button
             onClick={resetScore}
-            className="cursor-pointer px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg text-sm"
+            className="cursor-pointer px-3 py-2 md:px-4 md:py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg text-xs md:text-sm flex-1 min-w-[120px]"
           >
             Сбросить счет
           </button>
