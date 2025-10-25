@@ -359,28 +359,29 @@ export default function ConnectFour() {
           <button
             onClick={undoMove}
             disabled={undoStack.length === 0}
-            className="cursor-pointer px-3 py-2 md:px-4 md:py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-500 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg text-xs md:text-sm flex-1 min-w-[120px]"
+            className="cursor-pointer px-3 py-2 md:px-4 md:py-2 bg-[#E7DBFD] hover:bg-white disabled:bg-gray-500 disabled:cursor-not-allowed text-black font-semibold rounded-lg transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg text-xs md:text-sm flex-1 min-w-[120px]"
           >
             Отмена хода
           </button>
           <button
             onClick={redoMove}
             disabled={redoStack.length === 0}
-            className="cursor-pointer px-3 py-2 md:px-4 md:py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-500 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg text-xs md:text-sm flex-1 min-w-[120px]"
+            className="cursor-pointer px-3 py-2 md:px-4 md:py-2 bg-[#E7DBFD] hover:bg-white disabled:bg-gray-500 disabled:cursor-not-allowed text-black font-semibold rounded-lg transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg text-xs md:text-sm flex-1 min-w-[120px]"
           >
             Возобновление
           </button>
-          <button
-            onClick={resetGame}
-            className="cursor-pointer px-3 py-2 md:px-4 md:py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg text-xs md:text-sm flex-1 min-w-[120px]"
-          >
-            Новая игра
-          </button>
+
           <button
             onClick={resetScore}
-            className="cursor-pointer px-3 py-2 md:px-4 md:py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg text-xs md:text-sm flex-1 min-w-[120px]"
+            className="cursor-pointer px-3 py-2 md:px-4 md:py-2 bg-[#E7DBFD] hover:bg-white text-black font-semibold rounded-lg transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg text-xs md:text-sm flex-1 min-w-[120px]"
           >
             Сбросить счет
+          </button>
+          <button
+            onClick={resetGame}
+            className="cursor-pointer px-3 py-2 md:px-4 md:py-2 bg-[#E7DBFD] hover:bg-white text-black font-semibold rounded-lg transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:shadow-lg text-xs md:text-sm flex-1 min-w-[120px]"
+          >
+            Новая игра
           </button>
         </div>
       </div>
