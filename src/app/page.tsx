@@ -2,13 +2,13 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { Player, GameStatus, Moves, ValidatorResult, GameScore, ColumnX } from '@/shared/types/index.types';
-import { validator } from '@/shared/helpers/validator';
 import { saveGameState, loadGameState, saveScore, loadScore, clearGameState } from '@/shared/helpers/storage';
+import { validator } from '@/shared/helpers/validator';
 
-import GameStatusBar from '@components/GameStatusBar';
-import GameScoreboard from '@components/GameScoreboard';
-import GameBoard from '@components/GameBoard';
-import GameControls from '@components/GameControls';
+import GameStatusBar from '@/components/gameStatusBar/gameStatusBar';
+import GameScoreboard from '@/components/gameScoreboard/gameScoreboard';
+import GameBoard from '@/components/gameBoard/gameBoard';
+import GameControls from '@/components/gameControls/gameControls';
 
 export default function ConnectFour() {
   const [moves, setMoves] = useState<Moves>([]);
@@ -40,7 +40,7 @@ export default function ConnectFour() {
     }
   }, []);
 
-  const makeMove = useCallback((columnIndex: number) => {
+  const makeMove = useCallback((columnIndex: ColumnX) => {
     if (gameStatus === GameStatus.Win || gameStatus === GameStatus.Draw) return;
 
     const testMoves = [...moves, columnIndex];
@@ -90,9 +90,9 @@ export default function ConnectFour() {
     }
   }, [gameStatus, currentStep, scoreAwarded]);
 
-  const handleColumnClick = useCallback((col: number) => makeMove(col), [makeMove]);
+  const handleColumnClick = useCallback((col: ColumnX) => makeMove(col), [makeMove]);
 
-  const handleColumnHover = useCallback((col: number) => {
+  const handleColumnHover = useCallback((col: ColumnX) => {
     if (gameStatus === GameStatus.Win || gameStatus === GameStatus.Draw) return;
     setSelectedColumn(col);
   }, [gameStatus]);

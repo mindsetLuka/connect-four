@@ -1,4 +1,4 @@
-import { GameState, GameScore, Player, GameStatus } from '@/shared/types/index.types';
+import { GameState, GameScore } from '@/shared/types/index.types';
 
 const STORAGE_KEYS = {
   GAME_STATE: 'connect-four-game-state',
@@ -20,7 +20,6 @@ export function loadGameState(): Partial<GameState> | null {
     
     const parsed = JSON.parse(saved);
     
-    // Валидация загруженных данных
     if (typeof parsed !== 'object' || parsed === null) {
       return null;
     }

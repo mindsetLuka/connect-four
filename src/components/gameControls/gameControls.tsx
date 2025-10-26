@@ -1,4 +1,4 @@
-import ControlButton from './ControlButton';
+import ControlButton from '@/components/controlButton/controlButton';
 
 type GameControlsProps = {
   undoMove: () => void;

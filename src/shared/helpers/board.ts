@@ -21,7 +21,7 @@ export function dropPiece(board: Board, col: number, player: Player): { row: num
       return { row: row };
     }
   }
-  return null; // column full
+  return null;
 };
 
 export function isBoardFull(board: Board): boolean {

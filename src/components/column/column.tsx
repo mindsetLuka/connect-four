@@ -1,6 +1,6 @@
 import { ArrowDown } from '@geist-ui/icons';
 import { Lines, Player, GameStatus, ValidatorStep, ColumnX } from '@/shared/types/index.types';
-import Cell from '@components/Cell';
+import Cell from '@/components/cell/cell';
 
 
 

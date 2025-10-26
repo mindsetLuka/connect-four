@@ -17,25 +17,21 @@ export function checkWin(board: Board): WinResult {
       for (const [deltaRow, deltaCol] of directions) {
         const winningPositions: Coordinates[] = [[col, row]];
         
-        // Check for 3 more consecutive pieces in this direction
         for (let step = 1; step < 4; step++) {
           const nextRow = row + deltaRow * step;
           const nextCol = col + deltaCol * step;
           
-          // Check bounds
           if (nextRow < 0 || nextRow >= Lines.Rows || nextCol < 0 || nextCol >= Lines.Columns) {
             break;
           }
           
-          // Check if same player
           if (board[nextRow][nextCol].player !== currentPlayer) {
             break;
           }
           
           winningPositions.push([nextCol, nextRow]);
         }
-
-        // Found a winning line
+        
         if (winningPositions.length === 4) {
           return { 
             who: `player_${currentPlayer}`, 

@@ -1,5 +1,5 @@
 import { GameScore } from '@shared/types/index.types';
-import PlayerScoreCard from '@components/PlayerScoreCard';
+import PlayerScoreCard from '@/components/playerScoreCard/playerScoreCard';
 
 type GameScoreboardProps = {
   score: GameScore;

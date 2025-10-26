@@ -1,12 +1,1 @@
 @import "tailwindcss";
-
-:root {
-  --foreground: #ededed;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  color: var(--foreground);
-  font-family: 'Inter';
-}

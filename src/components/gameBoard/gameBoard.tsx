@@ -1,5 +1,5 @@
 import { Lines, GameStatus, ValidatorStep, ColumnX } from '@/shared/types/index.types';
-import Column from '@components/Column';
+import Column from '@/components/column/column';
 
 type GameBoardProps = {
     gameStatus: GameStatus,
