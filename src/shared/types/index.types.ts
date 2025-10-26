@@ -19,6 +19,7 @@ export enum Player {
 export type Step = string;
 export type ColumnX = number;
 export type RowY = number;
+export type Score = number;
 export type Coordinates = [ColumnX, RowY];
 export type Move = number;
 export type Moves = Move[];
@@ -45,8 +46,8 @@ export type ValidatorStep = {
 export type ValidatorResult = Record<Step, ValidatorStep>;
 
 export type GameScore = {
-  player1: number;
-  player2: number;
+  player1: Score;
+  player2: Score;
 };
 
 export type GameState = {
@@ -54,7 +55,7 @@ export type GameState = {
   currentPlayer: Player;
   gameResult: ValidatorResult;
   gameStatus: GameStatus;
-  selectedColumn: number;
+  selectedColumn: ColumnX;
   undoStack: Moves[];
   redoStack: Moves[];
   score: GameScore;
