@@ -19,6 +19,7 @@ export default function ConnectFour() {
 
   // Состояние для счета
   const [score, setScore] = useState<GameScore>({ player1: 0, player2: 0 });
+  const [scoreAwarded, setScoreAwarded] = useState(false);
 
   // Получаем текущее состояние игры через валидатор
   const currentStep = gameResult ? gameResult[`step_${moves.length}`] : null;
@@ -37,6 +38,7 @@ export default function ConnectFour() {
       if (savedState.selectedColumn !== undefined) setSelectedColumn(savedState.selectedColumn);
       if (savedState.undoStack) setUndoStack(savedState.undoStack);
       if (savedState.redoStack) setRedoStack(savedState.redoStack);
+      if (savedState.scoreAwarded !== undefined) setScoreAwarded(savedState.scoreAwarded);
     }
   }, []);
 
@@ -83,15 +85,18 @@ export default function ConnectFour() {
       selectedColumn,
       undoStack,
       redoStack,
-      score
+      score,
+      scoreAwarded, // ← добавляем сюда
     };
     saveGameState(gameState);
-  }, [moves, currentPlayer, gameResult, gameStatus, selectedColumn, undoStack, redoStack, score]);
+  }, [moves, currentPlayer, gameResult, gameStatus, selectedColumn, undoStack, redoStack, score, scoreAwarded]);
+  
 
   // Обновление счета при победе
   useEffect(() => {
-    if (gameStatus === GameStatus.Win && currentStep?.winner) {
+    if (!scoreAwarded && gameStatus === GameStatus.Win && currentStep?.winner) {
       const winnerPlayer = currentStep.winner.who === 'player_1' ? Player.First : Player.Second;
+  
       setScore(prevScore => {
         const newScore = {
           player1: winnerPlayer === Player.First ? prevScore.player1 + 1 : prevScore.player1,
@@ -100,8 +105,12 @@ export default function ConnectFour() {
         saveScore(newScore);
         return newScore;
       });
+  
+      // Ставим флаг, что очки уже начислены
+      setScoreAwarded(true);
     }
-  }, [gameStatus, currentStep]);
+  }, [gameStatus, currentStep, scoreAwarded]);
+  
 
   const handleColumnClick = useCallback((columnIndex: number) => {
     makeMove(columnIndex);
@@ -204,6 +213,7 @@ export default function ConnectFour() {
     setUndoStack([]);
     setRedoStack([]);
     clearGameState();
+    setScoreAwarded(false);
   }, []);
 
   const resetScore = useCallback(() => {

@@ -59,4 +59,5 @@ export type GameState = {
   undoStack: Moves[];
   redoStack: Moves[];
   score: GameScore;
+  scoreAwarded: boolean;
 };
