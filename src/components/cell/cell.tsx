@@ -1,4 +1,4 @@
-import { Player, GameStatus, ColumnX, RowY, ValidatorStep } from '@/shared/types/index.types';
+import { Player, ColumnX, RowY, ValidatorStep } from '@/shared/types/index.types';
 
 type CellProps = {
     col: ColumnX,
