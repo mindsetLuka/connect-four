@@ -1,13 +1,13 @@
 import ControlButton from '@/components/controlButton/controlButton';
 
 type GameControlsProps = {
-  undoMove: () => void;
-  redoMove: () => void;
-  resetGame: () => void;
-  resetScore: () => void;
-  undoDisabled: boolean;
-  redoDisabled: boolean;
-};
+  undoMove: () => void,
+  redoMove: () => void,
+  resetGame: () => void,
+  resetScore: () => void,
+  undoDisabled: boolean,
+  redoDisabled: boolean
+}
 
 export default function GameControls({
   undoMove,
@@ -15,7 +15,7 @@ export default function GameControls({
   resetGame,
   resetScore,
   undoDisabled,
-  redoDisabled
+  redoDisabled,
 }: GameControlsProps) {
   return (
     <div className="flex flex-wrap justify-center gap-2 md:gap-3">

@@ -3,7 +3,6 @@ import { createEmptyBoard, dropPiece, isBoardFull } from '@shared/helpers/board'
 import { getPlayerPositions } from '@shared/helpers/positions';
 import { checkWin } from '@shared/helpers/checker';
 
-
 export function validator(moves: Moves): ValidatorResult {
   const result: ValidatorResult = {};
   let board: Board = createEmptyBoard();
@@ -11,10 +10,10 @@ export function validator(moves: Moves): ValidatorResult {
   let gameStatus: GameStatus = GameStatus.Waiting;
   let winnerInfo: WinResult = null;
 
-  result[`step_0`] = {
+  result['step_0'] = {
     player_1: getPlayerPositions(board, Player.First),
     player_2: getPlayerPositions(board, Player.Second),
-    boardState: gameStatus
+    boardState: gameStatus,
   };
 
   for (let i = 0; i < moves.length; i++) {
@@ -29,7 +28,7 @@ export function validator(moves: Moves): ValidatorResult {
     }
 
     const boardCopy = board.map(row => row.slice());
-    
+
     const placed = dropPiece(boardCopy, col, currentPlayer);
     if (!placed) {
       currentPlayer = currentPlayer === Player.First ? Player.Second : Player.First;
@@ -48,7 +47,7 @@ export function validator(moves: Moves): ValidatorResult {
       player_1: getPlayerPositions(board, Player.First),
       player_2: getPlayerPositions(board, Player.Second),
       boardState: gameStatus,
-      ...(winnerInfo && { winner: winnerInfo })
+      ...(winnerInfo && { winner: winnerInfo }),
     };
 
     if (gameStatus === GameStatus.Pending) {
@@ -57,4 +56,4 @@ export function validator(moves: Moves): ValidatorResult {
   }
 
   return result;
-};
+}

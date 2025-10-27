@@ -1,8 +1,8 @@
 export enum GameStatus {
-  Waiting = "waiting",
-  Pending = "pending",
-  Win = "win",
-  Draw = "draw"
+  Waiting = 'waiting',
+  Pending = 'pending',
+  Win = 'win',
+  Draw = 'draw'
 };
 
 export enum Lines {
@@ -31,8 +31,8 @@ export type Cell = {
 
 export type Board = Cell[][];
 
-export type WinResult = { 
-  who: `player_${Player.First | Player.Second}`; 
+export type WinResult = {
+  who: `player_${Player.First | Player.Second}`;
   positions: Coordinates[];
 } | null;
 

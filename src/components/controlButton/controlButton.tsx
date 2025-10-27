@@ -1,8 +1,8 @@
 import { ButtonHTMLAttributes } from 'react';
 
 type ControlButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
-  label: string;
-};
+  label: string
+}
 
 export default function ControlButton({ label, ...props }: ControlButtonProps) {
   return (

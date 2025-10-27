@@ -70,7 +70,7 @@ export default function ConnectFour() {
       undoStack,
       redoStack,
       score,
-      scoreAwarded
+      scoreAwarded,
     };
     saveGameState(gameState);
   }, [moves, currentPlayer, gameResult, gameStatus, selectedColumn, undoStack, redoStack, score, scoreAwarded]);
@@ -81,7 +81,7 @@ export default function ConnectFour() {
       setScore(prevScore => {
         const newScore = {
           player1: winnerPlayer === Player.First ? prevScore.player1 + 1 : prevScore.player1,
-          player2: winnerPlayer === Player.Second ? prevScore.player2 + 1 : prevScore.player2
+          player2: winnerPlayer === Player.Second ? prevScore.player2 + 1 : prevScore.player2,
         };
         saveScore(newScore);
         return newScore;
@@ -102,18 +102,18 @@ export default function ConnectFour() {
       if (gameStatus === GameStatus.Win || gameStatus === GameStatus.Draw) return;
 
       switch (e.key) {
-        case 'ArrowLeft':
-          e.preventDefault();
-          setSelectedColumn(prev => Math.max(0, prev - 1));
-          break;
-        case 'ArrowRight':
-          e.preventDefault();
-          setSelectedColumn(prev => Math.min(6, prev + 1));
-          break;
-        case 'Enter':
-          e.preventDefault();
-          makeMove(selectedColumn);
-          break;
+      case 'ArrowLeft':
+        e.preventDefault();
+        setSelectedColumn(prev => Math.max(0, prev - 1));
+        break;
+      case 'ArrowRight':
+        e.preventDefault();
+        setSelectedColumn(prev => Math.min(6, prev + 1));
+        break;
+      case 'Enter':
+        e.preventDefault();
+        makeMove(selectedColumn);
+        break;
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -169,7 +169,6 @@ export default function ConnectFour() {
     setScore({ player1: 0, player2: 0 });
     saveScore({ player1: 0, player2: 0 });
   }, []);
-
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-2 bg-cover bg-center bg-fixed bg-[url('../../public/back-tochka.png')]">

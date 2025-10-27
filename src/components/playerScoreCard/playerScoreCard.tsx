@@ -1,8 +1,8 @@
 type PlayerScoreCardProps = {
-  color: string;
-  name: string;
-  score: number;
-};
+  color: string,
+  name: string,
+  score: number
+}
 
 export default function PlayerScoreCard({ color, name, score }: PlayerScoreCardProps) {
   return (

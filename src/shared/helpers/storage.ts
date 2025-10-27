@@ -2,7 +2,7 @@ import { GameState, GameScore } from '@/shared/types/index.types';
 
 const STORAGE_KEYS = {
   GAME_STATE: 'connect-four-game-state',
-  SCORE: 'connect-four-score'
+  SCORE: 'connect-four-score',
 } as const;
 
 export function saveGameState(gameState: Partial<GameState>): void {
@@ -17,13 +17,13 @@ export function loadGameState(): Partial<GameState> | null {
   try {
     const saved = localStorage.getItem(STORAGE_KEYS.GAME_STATE);
     if (!saved) return null;
-    
+
     const parsed = JSON.parse(saved);
-    
+
     if (typeof parsed !== 'object' || parsed === null) {
       return null;
     }
-    
+
     return parsed;
   } catch (error) {
     console.error('Failed to load game state:', error);
@@ -43,21 +43,21 @@ export function loadScore(): GameScore {
   try {
     const saved = localStorage.getItem(STORAGE_KEYS.SCORE);
     if (!saved) return { player1: 0, player2: 0 };
-    
+
     const parsed = JSON.parse(saved);
-    
+
     // Валидация загруженных данных
     if (typeof parsed !== 'object' || parsed === null) {
       return { player1: 0, player2: 0 };
     }
-    
+
     if (typeof parsed.player1 !== 'number' || typeof parsed.player2 !== 'number') {
       return { player1: 0, player2: 0 };
     }
-    
+
     return {
       player1: Math.max(0, parsed.player1),
-      player2: Math.max(0, parsed.player2)
+      player2: Math.max(0, parsed.player2),
     };
   } catch (error) {
     console.error('Failed to load score:', error);
