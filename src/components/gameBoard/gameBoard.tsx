@@ -5,8 +5,8 @@ type GameBoardProps = {
     gameStatus: GameStatus,
     currentStep: ValidatorStep | null,
     selectedColumn: ColumnX,
-    onColumnClick: ({}: ColumnX) => void,
-    onColumnHover: ({}: ColumnX) => void
+    onColumnClick: (col: ColumnX) => void,
+    onColumnHover: (col: ColumnX) => void
 }
 
 export default function GameBoard({

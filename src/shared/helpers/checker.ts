@@ -1,41 +1,30 @@
 import { Board, Player, WinResult, Lines, Coordinates } from '@shared/types/index.types';
 
 export function checkWin(board: Board): WinResult {
-  const directions = [
-    [0, 1],
-    [1, 0],
-    [1, 1],
-    [1, -1],
+  const directions: Coordinates[] = [
+    [0, 1],   // горизонталь
+    [1, 0],   // вертикаль
+    [1, 1],   // диагональ ↘
+    [1, -1],  // диагональ ↗
   ];
-
-  for (let row = 0; row < Lines.Rows; row++) {
-    for (let col = 0; col < Lines.Columns; col++) {
+  const { Rows, Columns } = Lines;
+  for (let row = 0; row < Rows; row++) {
+    for (let col = 0; col < Columns; col++) {
       const currentPlayer = board[row][col].player;
-
       if (currentPlayer === Player.Empty) continue;
-
-      for (const [deltaRow, deltaCol] of directions) {
-        const winningPositions: Coordinates[] = [[col, row]];
-
+      for (const [dRow, dCol] of directions) {
+        const positions: Coordinates[] = [[col, row]];
         for (let step = 1; step < 4; step++) {
-          const nextRow = row + deltaRow * step;
-          const nextCol = col + deltaCol * step;
-
-          if (nextRow < 0 || nextRow >= Lines.Rows || nextCol < 0 || nextCol >= Lines.Columns) {
-            break;
-          }
-
-          if (board[nextRow][nextCol].player !== currentPlayer) {
-            break;
-          }
-
-          winningPositions.push([nextCol, nextRow]);
+          const nextRow = row + dRow * step;
+          const nextCol = col + dCol * step;
+          if (nextRow < 0 || nextRow >= Rows || nextCol < 0 || nextCol >= Columns) break;
+          if (board[nextRow][nextCol].player !== currentPlayer) break;
+          positions.push([nextCol, nextRow]);
         }
-
-        if (winningPositions.length === 4) {
+        if (positions.length === 4) {
           return {
             who: `player_${currentPlayer}`,
-            positions: winningPositions,
+            positions,
           };
         }
       }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { Player, GameStatus, Moves, ValidatorResult, GameScore, ColumnX } from '@/shared/types/index.types';
 import { saveGameState, loadGameState, saveScore, loadScore, clearGameState } from '@/shared/helpers/storage';
 import { validator } from '@/shared/helpers/validator';
@@ -21,47 +21,50 @@ export default function ConnectFour() {
   const [score, setScore] = useState<GameScore>({ player1: 0, player2: 0 });
   const [scoreAwarded, setScoreAwarded] = useState(false);
 
-  const currentStep = gameResult ? gameResult[`step_${moves.length}`] : null;
+  const selectedColumnRef = useRef<ColumnX>(0);
+  const gameStatusRef = useRef<GameStatus>(GameStatus.Waiting);
+
+  useEffect(() => {
+    selectedColumnRef.current = selectedColumn;
+  }, [selectedColumn]);
+  useEffect(() => {
+    gameStatusRef.current = gameStatus;
+  }, [gameStatus]);
+
+  const applyMovesState = useCallback((nextMoves: Moves) => {
+    const res = validator(nextMoves);
+    const stepKey = `step_${nextMoves.length}` as const;
+    const step = res[stepKey];
+
+    setGameResult(res);
+    if (step) {
+      setGameStatus(step.boardState);
+      setCurrentPlayer(nextMoves.length % 2 === 0 ? Player.First : Player.Second);
+    }
+  }, []);
+
+  const currentStep = useMemo(() => {
+    if (!gameResult) return null;
+    return gameResult[`step_${moves.length}`];
+  }, [gameResult, moves.length]);
 
   useEffect(() => {
     const savedScore = loadScore();
     setScore(savedScore);
-
-    const savedState = loadGameState();
-    if (savedState) {
-      if (savedState.moves) setMoves(savedState.moves);
-      if (savedState.currentPlayer !== undefined) setCurrentPlayer(savedState.currentPlayer);
-      if (savedState.gameResult) setGameResult(savedState.gameResult);
-      if (savedState.gameStatus) setGameStatus(savedState.gameStatus);
-      if (savedState.selectedColumn !== undefined) setSelectedColumn(savedState.selectedColumn);
-      if (savedState.undoStack) setUndoStack(savedState.undoStack);
-      if (savedState.redoStack) setRedoStack(savedState.redoStack);
-      if (savedState.scoreAwarded !== undefined) setScoreAwarded(savedState.scoreAwarded);
-    }
+    const s = loadGameState();
+    if (!s) return;
+    setMoves(s.moves ?? []);
+    setCurrentPlayer(s.currentPlayer ?? Player.First);
+    setGameResult(s.gameResult ?? {});
+    setGameStatus(s.gameStatus ?? GameStatus.Waiting);
+    setSelectedColumn(s.selectedColumn ?? 0);
+    setUndoStack(s.undoStack ?? []);
+    setRedoStack(s.redoStack ?? []);
+    setScoreAwarded(Boolean(s.scoreAwarded));
   }, []);
 
-  const makeMove = useCallback((columnIndex: ColumnX) => {
-    if (gameStatus === GameStatus.Win || gameStatus === GameStatus.Draw) return;
-
-    const testMoves = [...moves, columnIndex];
-    const testResult = validator(testMoves);
-    const stepKey = `step_${testMoves.length}`;
-    const stepResult = testResult[stepKey];
-    if (!stepResult) return;
-
-    setUndoStack(prev => [...prev, moves]);
-    setRedoStack([]);
-    setMoves(testMoves);
-    setGameResult(testResult);
-    setGameStatus(stepResult.boardState);
-
-    if (stepResult.boardState === GameStatus.Pending) {
-      setCurrentPlayer(currentPlayer === Player.First ? Player.Second : Player.First);
-    }
-  }, [moves, currentPlayer, gameStatus]);
-
   useEffect(() => {
-    const gameState = {
+    saveGameState({
       moves,
       currentPlayer,
       gameResult,
@@ -71,71 +74,80 @@ export default function ConnectFour() {
       redoStack,
       score,
       scoreAwarded,
-    };
-    saveGameState(gameState);
+    });
   }, [moves, currentPlayer, gameResult, gameStatus, selectedColumn, undoStack, redoStack, score, scoreAwarded]);
+
+  const makeMove = useCallback((columnIndex: ColumnX) => {
+    if (gameStatusRef.current === GameStatus.Win || gameStatusRef.current === GameStatus.Draw) return;
+    const testMoves = [...moves, columnIndex] as Moves;
+    const testResult = validator(testMoves);
+    const stepKey = `step_${testMoves.length}` as const;
+    const stepResult = testResult[stepKey];
+    if (!stepResult) return;
+    setUndoStack(prev => [...prev, moves]);
+    setRedoStack([]);
+    setMoves(testMoves);
+    setGameResult(testResult);
+    setGameStatus(stepResult.boardState);
+    if (stepResult.boardState === GameStatus.Pending) {
+      setCurrentPlayer(prev => (prev === Player.First ? Player.Second : Player.First));
+    }
+  }, [moves]);
 
   useEffect(() => {
     if (!scoreAwarded && gameStatus === GameStatus.Win && currentStep?.winner) {
       const winnerPlayer = currentStep.winner.who === 'player_1' ? Player.First : Player.Second;
-      setScore(prevScore => {
-        const newScore = {
-          player1: winnerPlayer === Player.First ? prevScore.player1 + 1 : prevScore.player1,
-          player2: winnerPlayer === Player.Second ? prevScore.player2 + 1 : prevScore.player2,
+      setScore(prev => {
+        const next = {
+          player1: winnerPlayer === Player.First ? prev.player1 + 1 : prev.player1,
+          player2: winnerPlayer === Player.Second ? prev.player2 + 1 : prev.player2,
         };
-        saveScore(newScore);
-        return newScore;
+        saveScore(next);
+        return next;
       });
       setScoreAwarded(true);
     }
   }, [gameStatus, currentStep, scoreAwarded]);
 
   const handleColumnClick = useCallback((col: ColumnX) => makeMove(col), [makeMove]);
-
   const handleColumnHover = useCallback((col: ColumnX) => {
-    if (gameStatus === GameStatus.Win || gameStatus === GameStatus.Draw) return;
+    if (gameStatusRef.current === GameStatus.Win || gameStatusRef.current === GameStatus.Draw) return;
     setSelectedColumn(col);
-  }, [gameStatus]);
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (gameStatus === GameStatus.Win || gameStatus === GameStatus.Draw) return;
-
+      const status = gameStatusRef.current;
+      if (status === GameStatus.Win || status === GameStatus.Draw) return;
+      const clamp = (n: number) => (n < 0 ? 0 : n > 6 ? 6 : n);
       switch (e.key) {
       case 'ArrowLeft':
         e.preventDefault();
-        setSelectedColumn(prev => Math.max(0, prev - 1));
+        setSelectedColumn(prev => clamp(prev - 1) as ColumnX);
         break;
       case 'ArrowRight':
         e.preventDefault();
-        setSelectedColumn(prev => Math.min(6, prev + 1));
+        setSelectedColumn(prev => clamp(prev + 1) as ColumnX);
         break;
       case 'Enter':
         e.preventDefault();
-        makeMove(selectedColumn);
+        makeMove(selectedColumnRef.current);
         break;
       }
     };
+
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedColumn, makeMove, gameStatus]);
+  }, [makeMove]);
 
   const undoMove = useCallback(() => {
     if (undoStack.length === 0) return;
     const previousMoves = undoStack[undoStack.length - 1];
-    const currentMoves = moves;
-    setRedoStack(prev => [...prev, currentMoves]);
+    setRedoStack(prev => [...prev, moves]);
     setMoves(previousMoves);
     setUndoStack(prev => prev.slice(0, -1));
-    const newResult = validator(previousMoves);
-    setGameResult(newResult);
-    const stepKey = `step_${previousMoves.length}`;
-    const stepResult = newResult[stepKey];
-    if (stepResult) {
-      setGameStatus(stepResult.boardState);
-      setCurrentPlayer(previousMoves.length % 2 === 0 ? Player.First : Player.Second);
-    }
-  }, [undoStack, moves]);
+    applyMovesState(previousMoves);
+  }, [undoStack, moves, applyMovesState]);
 
   const redoMove = useCallback(() => {
     if (redoStack.length === 0) return;
@@ -143,15 +155,8 @@ export default function ConnectFour() {
     setUndoStack(prev => [...prev, moves]);
     setMoves(nextMoves);
     setRedoStack(prev => prev.slice(0, -1));
-    const newResult = validator(nextMoves);
-    setGameResult(newResult);
-    const stepKey = `step_${nextMoves.length}`;
-    const stepResult = newResult[stepKey];
-    if (stepResult) {
-      setGameStatus(stepResult.boardState);
-      setCurrentPlayer(nextMoves.length % 2 === 0 ? Player.First : Player.Second);
-    }
-  }, [redoStack, moves]);
+    applyMovesState(nextMoves);
+  }, [redoStack, moves, applyMovesState]);
 
   const resetGame = useCallback(() => {
     setMoves([]);
@@ -166,8 +171,9 @@ export default function ConnectFour() {
   }, []);
 
   const resetScore = useCallback(() => {
-    setScore({ player1: 0, player2: 0 });
-    saveScore({ player1: 0, player2: 0 });
+    const zero = { player1: 0, player2: 0 };
+    setScore(zero);
+    saveScore(zero);
   }, []);
 
   return (

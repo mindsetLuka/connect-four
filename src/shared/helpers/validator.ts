@@ -3,55 +3,47 @@ import { createEmptyBoard, dropPiece, isBoardFull } from '@shared/helpers/board'
 import { getPlayerPositions } from '@shared/helpers/positions';
 import { checkWin } from '@shared/helpers/checker';
 
+function nextPlayer(player: Player): Player {
+  return player === Player.First ? Player.Second : Player.First;
+}
+
 export function validator(moves: Moves): ValidatorResult {
   const result: ValidatorResult = {};
   let board: Board = createEmptyBoard();
   let currentPlayer: Player = Player.First;
-  let gameStatus: GameStatus = GameStatus.Waiting;
+  let status: GameStatus = GameStatus.Waiting;
   let winnerInfo: WinResult = null;
-
   result['step_0'] = {
     player_1: getPlayerPositions(board, Player.First),
     player_2: getPlayerPositions(board, Player.Second),
-    boardState: gameStatus,
+    boardState: status,
   };
 
   for (let i = 0; i < moves.length; i++) {
     const col = moves[i];
-
-    if (gameStatus === GameStatus.Win || gameStatus === GameStatus.Draw) {
-      break;
-    }
-
-    if (i === 0) {
-      gameStatus = GameStatus.Pending;
-    }
-
-    const boardCopy = board.map(row => row.slice());
-
-    const placed = dropPiece(boardCopy, col, currentPlayer);
+    if (status === GameStatus.Win || status === GameStatus.Draw) break;
+    if (i === 0) status = GameStatus.Pending;
+    const newBoard = board.map(row => [...row]);
+    const placed = dropPiece(newBoard, col, currentPlayer);
     if (!placed) {
-      currentPlayer = currentPlayer === Player.First ? Player.Second : Player.First;
+      currentPlayer = nextPlayer(currentPlayer);
       continue;
     }
-
-    board = boardCopy;
+    board = newBoard;
     winnerInfo = checkWin(board);
     if (winnerInfo) {
-      gameStatus = GameStatus.Win;
+      status = GameStatus.Win;
     } else if (isBoardFull(board)) {
-      gameStatus = GameStatus.Draw;
+      status = GameStatus.Draw;
     }
-
     result[`step_${i + 1}`] = {
       player_1: getPlayerPositions(board, Player.First),
       player_2: getPlayerPositions(board, Player.Second),
-      boardState: gameStatus,
-      ...(winnerInfo && { winner: winnerInfo }),
+      boardState: status,
+      ...(winnerInfo ? { winner: winnerInfo } : {}),
     };
-
-    if (gameStatus === GameStatus.Pending) {
-      currentPlayer = currentPlayer === Player.First ? Player.Second : Player.First;
+    if (status === GameStatus.Pending) {
+      currentPlayer = nextPlayer(currentPlayer);
     }
   }
 
