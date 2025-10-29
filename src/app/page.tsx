@@ -21,6 +21,7 @@ export default function ConnectFour() {
   const [score, setScore] = useState<GameScore>({ player1: 0, player2: 0 });
   const [scoreAwarded, setScoreAwarded] = useState(false);
   const [playVsBot, setPlayVsBot] = useState(false);
+  const [botPaused, setBotPaused] = useState(false);
 
   const selectedColumnRef = useRef<ColumnX>(0);
   const gameStatusRef = useRef<GameStatus>(GameStatus.Waiting);
@@ -114,7 +115,10 @@ export default function ConnectFour() {
     }
   }, [gameStatus, currentStep, scoreAwarded]);
 
-  const handleColumnClick = useCallback((col: ColumnX) => makeMove(col), [makeMove]);
+  const handleColumnClick = useCallback((col: ColumnX) => {
+    if (playVsBot) setBotPaused(false);
+    makeMove(col);
+  }, [makeMove, playVsBot]);
   const handleColumnHover = useCallback((col: ColumnX) => {
     if (gameStatusRef.current === GameStatus.Win || gameStatusRef.current === GameStatus.Draw) return;
     setSelectedColumn(col);
@@ -149,6 +153,7 @@ export default function ConnectFour() {
   useEffect(() => {
     if (!playVsBot) return;
     if (gameStatusRef.current === GameStatus.Win || gameStatusRef.current === GameStatus.Draw) return;
+    if (botPaused) return;
     if (currentPlayer !== Player.Second) return;
     const timer = setTimeout(() => {
       const col = chooseBotMove(moves, Player.Second);
@@ -156,7 +161,7 @@ export default function ConnectFour() {
     }, 350);
 
     return () => clearTimeout(timer);
-  }, [moves, playVsBot, currentPlayer, gameStatus, makeMove]);
+  }, [moves, playVsBot, currentPlayer, gameStatus, makeMove, botPaused]);
 
   const undoMove = useCallback(() => {
     if (undoStack.length === 0) return;
@@ -165,7 +170,8 @@ export default function ConnectFour() {
     setMoves(previousMoves);
     setUndoStack(prev => prev.slice(0, -1));
     applyMovesState(previousMoves);
-  }, [undoStack, moves, applyMovesState]);
+    if (playVsBot) setBotPaused(true);
+  }, [undoStack, moves, applyMovesState, playVsBot]);
 
   const redoMove = useCallback(() => {
     if (redoStack.length === 0) return;
@@ -174,7 +180,8 @@ export default function ConnectFour() {
     setMoves(nextMoves);
     setRedoStack(prev => prev.slice(0, -1));
     applyMovesState(nextMoves);
-  }, [redoStack, moves, applyMovesState]);
+    if (playVsBot && redoStack.length === 1) setBotPaused(false);
+  }, [redoStack, moves, applyMovesState, playVsBot]);
 
   const resetGame = useCallback(() => {
     setMoves([]);
@@ -186,6 +193,7 @@ export default function ConnectFour() {
     setRedoStack([]);
     setScoreAwarded(false);
     clearGameState();
+    setBotPaused(false);
   }, []);
 
   const resetScore = useCallback(() => {
