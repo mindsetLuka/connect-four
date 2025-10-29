@@ -20,15 +20,15 @@ export default function GameStatusBar({
     }
     if (gameStatus === GameStatus.Draw) return '🤝 Ничья!';
     if (gameStatus === GameStatus.Pending) return `Ход: ${getPlayerName(currentPlayer)}`;
-    return 'Нажмите на колонку, чтобы начать игру';
+    return 'Выберите режим и нажмите на колонку, чтобы начать игру';
   };
 
   return (
     <div className="text-center mb-3">
       <p className="text-base md:text-lg text-white font-semibold">{getStatusMessage()}</p>
       <p className="text-xs md:text-sm text-white/70 mt-1 leading-relaxed">
-                Используйте ← → или касание для выбора колонки<br />
-                Enter или касание для размещения фишки
+                Используйте ← → или нажатие для выбора колонки<br />
+                Enter или нажатие для размещения фишки
       </p>
     </div>
   );
