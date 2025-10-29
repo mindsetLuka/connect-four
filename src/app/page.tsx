@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { Player, GameStatus, Moves, ValidatorResult, GameScore, ColumnX } from '@/shared/types/index.types';
 import { saveGameState, loadGameState, saveScore, loadScore, clearGameState } from '@/shared/helpers/storage';
 import { validator } from '@/shared/helpers/validator';
-
+import chooseBotMove from '@/shared/helpers/bot';
 import GameStatusBar from '@/components/gameStatusBar/gameStatusBar';
 import GameScoreboard from '@/components/gameScoreboard/gameScoreboard';
 import GameBoard from '@/components/gameBoard/gameBoard';
@@ -20,6 +20,7 @@ export default function ConnectFour() {
   const [redoStack, setRedoStack] = useState<Moves[]>([]);
   const [score, setScore] = useState<GameScore>({ player1: 0, player2: 0 });
   const [scoreAwarded, setScoreAwarded] = useState(false);
+  const [playVsBot, setPlayVsBot] = useState(false);
 
   const selectedColumnRef = useRef<ColumnX>(0);
   const gameStatusRef = useRef<GameStatus>(GameStatus.Waiting);
@@ -38,7 +39,11 @@ export default function ConnectFour() {
 
     setGameResult(res);
     if (step) {
-      setGameStatus(step.boardState);
+      if (nextMoves.length === 0 && step.boardState === GameStatus.Waiting) {
+        setGameStatus(GameStatus.Pending);
+      } else {
+        setGameStatus(step.boardState);
+      }
       setCurrentPlayer(nextMoves.length % 2 === 0 ? Player.First : Player.Second);
     }
   }, []);
@@ -131,6 +136,7 @@ export default function ConnectFour() {
         break;
       case 'Enter':
         e.preventDefault();
+        if (playVsBot && currentPlayer === Player.Second) return;
         makeMove(selectedColumnRef.current);
         break;
       }
@@ -138,7 +144,19 @@ export default function ConnectFour() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [makeMove]);
+  }, [makeMove, currentPlayer, playVsBot]);
+
+  useEffect(() => {
+    if (!playVsBot) return;
+    if (gameStatusRef.current === GameStatus.Win || gameStatusRef.current === GameStatus.Draw) return;
+    if (currentPlayer !== Player.Second) return;
+    const timer = setTimeout(() => {
+      const col = chooseBotMove(moves, Player.Second);
+      if (typeof col === 'number') makeMove(col);
+    }, 350);
+
+    return () => clearTimeout(timer);
+  }, [moves, playVsBot, currentPlayer, gameStatus, makeMove]);
 
   const undoMove = useCallback(() => {
     if (undoStack.length === 0) return;
@@ -187,7 +205,10 @@ export default function ConnectFour() {
           gameStatus={gameStatus}
           currentStep={currentStep}
           selectedColumn={selectedColumn}
-          onColumnClick={handleColumnClick}
+          onColumnClick={(col) => {
+            if (playVsBot && currentPlayer === Player.Second) return;
+            handleColumnClick(col);
+          }}
           onColumnHover={handleColumnHover}
         />
         <GameControls
@@ -197,6 +218,9 @@ export default function ConnectFour() {
           resetScore={resetScore}
           undoDisabled={undoStack.length === 0}
           redoDisabled={redoStack.length === 0}
+          playVsBot={playVsBot}
+          setPlayVsBot={setPlayVsBot}
+          gameStatus={gameStatus}
         />
       </section>
     </main>
