@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Игра "Четыре в ряд"
 
-## Getting Started
+Реализация классической игры "Четыре в ряд", построенная на Next.js.
 
-First, run the development server:
+## Начало работы
 
+После клонирования репозитория есть несколько способов запустить игру локально. Выберите метод, который лучше всего подходит для вашей конфигурации.
+
+### Способ 1: Использование Node.js напрямую
+
+1. Убедитесь, что у вас установлен Node.js
+2. Установите зависимости:
+```bash
+npm install
+```
+3. Запустите сервер разработки:
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Игра будет доступна по адресу [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Способ 2: Использование Docker Compose
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Если у вас установлены Docker и Docker Compose:
 
-## Learn More
+1. Соберите и запустите контейнер:
+```bash
+docker-compose up --build
+```
 
-To learn more about Next.js, take a look at the following resources:
+Игра будет доступна по адресу [http://localhost:3000](http://localhost:3000)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Способ 3: Продакшн-сборка
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Для оптимизированной версии:
 
-## Deploy on Vercel
+1. Установите зависимости:
+```bash
+npm install
+```
+2. Соберите приложение:
+```bash
+npm run build
+```
+3. Запустите продакшн-сервер:
+```bash
+npm start
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Игра будет доступна по адресу [http://localhost:3000](http://localhost:3000)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Технологии
+
+### Основные технологии
+- Next.js
+- React и React DOM
+- TypeScript
+
+### UI компоненты и стилизация
+- Geist UI
+- Geist Icons
+- TailwindCSS
+- PostCSS
+
+### Разработка и качество кода
+- ESLint
+
+### Инфраструктура
+- Docker 
+- Docker Compose 
+- Node.js
